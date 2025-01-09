@@ -1,2 +1,3 @@
 # member_area_card
-Library Card on Member Area in SLiMS
+Copy file member.inc.php in folder lib
+put qrcode.min.js onto folder js
