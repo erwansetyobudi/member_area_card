@@ -5,7 +5,7 @@ A plugin to enhance the Member Area functionality in SLiMS (Senayan Library Mana
 ## Features
 - **Library Membership Card**: Displays a personalized membership card with details such as name, ID, email, institution, and membership expiration date.
 - **QR Code Integration**: Automatically generates a QR code based on the member's ID.
-- **Fullscreen Mode**: Allows users to view the card in fullscreen mode for better visibility, especially on mobile devices.
+- **Fullscreen Mode and Print**: Allows users to view the card in fullscreen mode for better visibility, especially on mobile devices and print it.
 - **Responsive Design**: Optimized for both desktop and mobile devices with a modern and sleek UI.
 - **Easy Integration**: Plug-and-play setup compatible with SLiMS version 9.6.1.
 
@@ -25,7 +25,8 @@ A plugin to enhance the Member Area functionality in SLiMS (Senayan Library Mana
 
 4. **Activate the Plugin**  
    Log in as a super admin, click the "System" menu, select the "Plugin" submenu, and activate the plugin.
-
+5. **Check on Member Area Page** 
+   Check the Member Area to find the "My Card" tab with the updated features.
 
 
 ## How to Use
@@ -44,13 +45,6 @@ This plugin has been tested with SLiMS version 9.6.1. Compatibility with earlier
 - **Plugin Name**: slims-member-area-card
 - **Author**: Erwan Setyo Budi
 - **SLiMS Version**: 9.6.1
-
-## Quick Installation Steps
-1. Download the plugin from [GitHub](https://github.com/erwansetyobudi/member_area_card).
-2. Extract the plugin into the `plugins` folder of your SLiMS installation.
-3. Ensure the folder name is `slims-member-area-card`.
-4. Activate the plugin by logging in as a super admin, navigating to the "System" menu, selecting "Plugin," and enabling the plugin.
-5. Check the Member Area to find the "My Card" tab with the updated features.
 
 ---
 Feel free to use and contribute to this project. For any issues or feedback, don’t hesitate to contact me!

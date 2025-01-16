@@ -1,4 +1,3 @@
-<script src="<?php echo JWB; ?>qrcode.min.js"></script>
 <?php
 /**
  *
@@ -6,8 +5,8 @@
  * Copyright (C) 2009  Arie Nugraha (dicarve@yahoo.com)
  * Patched by Hendro Wicaksono (hendrowicaksono@yahoo.com)
  * Patched by Waris Agung Widodo (ido.alit@gmail.com)
- * Last Modified by Erwan Setyo Budi (erwans818@gmail.com) at 09 January 2025
-  *
+ * Modified My Card tabs by Erwan Setyo Budi (erwan818@gmail.com)
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,16 +20,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * 
-
- * 
- *  
+ *
  */
 
 use SLiMS\Url;
 use SLiMS\DB;
 use SLiMS\Json;
-use SLiMS\Auth\Validator;
 use SLiMS\Captcha\Factory as Captcha;
 use Volnix\CSRF\CSRF;
 
@@ -52,16 +47,7 @@ do_checkIP('opac-member');
 
 // Required flie
 require SIMBIO . 'simbio_DB/simbio_dbop.inc.php';
-
-// create logon class instance
-$logon = Validator::use(
-    config(
-    'auth.methods.' . config('auth.sections.member'),
-    \SLiMS\Auth\Methods\Native::class
-    )
-);
-
-$logon->getHook();
+require LIB . 'member_logon.inc.php';
 
 // Captcha initialize
 $captcha = Captcha::section('memberarea');
@@ -84,7 +70,7 @@ define('CANT_UPDATE_PASSWD', -3);
 // if member is logged out
 if (isset($_GET['logout']) && $_GET['logout'] == '1') {
     // write log
-    writeLog('member', $_SESSION['m_email'], 'Login', $_SESSION['m_name'] . ' Log Out from address ' . ip());
+    utility::writeLogs($dbs, 'member', $_SESSION['email']??'', 'Login', $_SESSION['member_name']??'' . ' Log Out from address ' . ip());
     // completely destroy session cookie
     simbio_security::destroySessionCookie(null, MEMBER_COOKIES_NAME, SWB, false);
     redirect()->withHeader([
@@ -119,9 +105,13 @@ if (isset($_POST['logMeIn']) && !$is_member_login) {
     // regenerate session ID to prevent session hijacking
     session_regenerate_id(true);
 
-    if ($logon->process('member')) {
+    // create logon class instance
+    $logon = new member_logon($username, $password, 'native');
+    if (isset($sysconf['auth']) && $sysconf['auth']['member']['method'] === 'LDAP') $ldap_configs = $sysconf['auth']['member'];
+
+    if ($logon->valid($dbs)) {
         // write log
-        writeLog('member', $username, 'Login', sprintf(__('Login success for member %s from address %s'),$username,ip()));
+        utility::writeLogs($dbs, 'member', $username, 'Login', sprintf(__('Login success for member %s from address %s'),$username,ip()));
         if (isset($_GET['destination']) && Url::isValid($_GET['destination']) && Url::isSelf($_GET['destination'])) {
             redirect($_GET['destination']);
         } else {
@@ -130,11 +120,11 @@ if (isset($_POST['logMeIn']) && !$is_member_login) {
         exit();
     } else {
         // write log
-        writeLog('member', $username, 'Login', sprintf(__('Login FAILED for member %s from address %s'),$username,ip()));
+        utility::writeLogs($dbs, 'member', $username, 'Login', sprintf(__('Login FAILED for member %s from address %s'),$username,ip()));
         // message
         //simbio_security::destroySessionCookie($msg, MEMBER_COOKIES_NAME, SWB, false);
         CSRF::generateToken();
-        redirect()->withMessage('wrong_password', $logon->getError())->to('?p=member');
+        redirect()->withMessage('wrong_password', __('Login FAILED! Wrong Member ID or password!'))->to('?p=member');
     }
 }
 
@@ -404,7 +394,7 @@ if ($is_member_login) :
         $_loan_list->using_AJAX = false;
         // return the result
         $_result = $_loan_list->createDataGrid($dbs, $_table_spec, $num_recs_show);
-        $_result = '<div class="memberLoanListInfo my-3">' . $_loan_list->num_rows . ' ' . __('item(s) currently on loan') . ' | <a href="?p=download_current_loan" class="btn btn-sm btn-outline-primary"><i class="fa fa-download"></i>&nbsp;&nbsp;' . __('Download All Current Loan') . '</a> <a href="?p=download_member_loan_report" class="btn btn-sm btn-outline-primary"><i class="fa fa-download"></i>&nbsp;&nbsp;' . __('Download All Loan Report') . '</a></div>' . "\n" . $_result;
+        $_result = '<div class="memberLoanListInfo my-3">' . $_loan_list->num_rows . ' ' . __('item(s) currently on loan') . ' | <a href="?p=download_current_loan" class="btn btn-sm btn-outline-primary"><i class="fa fa-download"></i>&nbsp;&nbsp;' . __('Download All Current Loan') . '</a></div>' . "\n" . $_result;
         return $_result;
     }
 
@@ -546,11 +536,9 @@ if ($is_member_login) :
         $_loan_list->setSQLCriteria($_criteria);
         $_loan_list->column_width[0] = '5%';
         $_loan_list->modifyColumnContent(1, 'callback{titleLink}');
-        if (!function_exists('titleLink')) {
-            function titleLink($db, $data)
-            {
-                return '<a target="_blank" href="index.php?p=show_detail&id=' . $data[0] . '">' . $data[1] . '</a>';
-            }
+        function titleLink($db, $data)
+        {
+            return '<a target="_blank" href="index.php?p=show_detail&id=' . $data[0] . '">' . $data[1] . '</a>';
         }
         $_loan_list->modifyColumnContent(0, '<input type="checkbox" name="basket[]" class="basketItem" value="{column_value}" />');
 
@@ -605,13 +593,13 @@ if ($is_member_login) :
                  ->send();
 
             // write to system log
-            writeLog('member', isset($_SESSION['mid']) ? $_SESSION['mid'] : '0', 'membership', 'Reservation notification e-mail sent to ' . $_SESSION['m_email'], 'Reservation', 'Add');
+            utility::writeLogs($dbs, 'member', isset($_SESSION['mid']) ? $_SESSION['mid'] : '0', 'membership', 'Reservation notification e-mail sent to ' . $_SESSION['m_email'], 'Reservation', 'Add');
 
             // sent response
             return ['status' => 'SENT', 'message' => 'Reservation notification e-mail sent to ' . $_SESSION['m_email']];
         } catch (Exception $exception) {
             // write to system log
-            writeLog('member', isset($_SESSION['mid']) ? $_SESSION['mid'] : '0', 'membership', 'FAILED to send reservation e-mail to ' . $_SESSION['m_email'] . ' (' . $mail->ErrorInfo . ')');
+            utility::writeLogs($dbs, 'member', isset($_SESSION['mid']) ? $_SESSION['mid'] : '0', 'membership', 'FAILED to send reservation e-mail to ' . $_SESSION['m_email'] . ' (' . $mail->ErrorInfo . ')');
 
             return ['status' => 'ERROR', 'message' => "Message could not be sent. Mailer Error: {$mail->ErrorInfo}"];
         }
@@ -719,7 +707,7 @@ if ($is_member_login) :
     }
 
     // if there is change password request
-    if (isset($_POST['changePass']) && config('auth.sections.member') == 'native') {
+    if (isset($_POST['changePass']) && $sysconf['auth']['member']['method'] == 'native') {
         $change_pass = procChangePassword($_POST['currPass'], $_POST['newPass'], $_POST['newPass2']);
         if ($change_pass === true) {
             $info = '<span style="font-size: 120%; font-weight: bold; color: #28a745;">' . __('Your password have been changed successfully.') . '</span>';
@@ -766,9 +754,11 @@ if ($is_member_login) :
             <div class="p-4">
                 <img src="<?= $member_image_url ?>" alt="member photo" class="rounded shadow">
             </div>
+            <a href="index.php?p=member_card" target="print_member_card" class="btn btn-secondary btn-block"><i class="fas fa-print mr-2"></i>Cetak Kartu Anggota</a>
             <a href="index.php?p=member&logout=1" class="btn btn-danger btn-block"><i
                         class="fas fa-sign-out-alt mr-2"></i><?php echo __('LOGOUT'); ?></a>
         </div>
+        <iframe name="print_member_card" class="d-none"></iframe>
         <div class="flex-grow-1 p-4" id="member_content">
             <div class="text-sm text-grey-dark">
                 <?php
@@ -793,6 +783,8 @@ if ($is_member_login) :
             <div class="my-4">
                 <ul class="nav nav-tabs nav-fill">
                     <?php
+                    $name_parts = explode(' ', $_SESSION['m_name']);
+                    $short_name = implode(' ', array_slice($name_parts, 0, 2));
                     $tabs_menus = [
                         'current_loan' => [
                             'text' => __('Current Loan'),
@@ -862,113 +854,138 @@ if ($is_member_login) :
                             echo '</div>';
                             echo showMemberDetail();
                             // change password only form NATIVE authentication, not for others such as LDAP
-                            if (config('auth.sections.member') == 'native') {
+                            // if ($sysconf['auth']['member']['method'] == 'native') {
                                 echo '<div class="tagline">';
                                 echo '<div class="memberInfoHead mt-8">' . __('Change Password') . '</div>' . "\n";
                                 echo '</div>';
                                 echo changePassword();
-                            }
+                            // }
                             break;
-                     	// Add case by Erwan Setyo Budi
-                        case 'my_card':
-						    echo '<div class="tagline">';
-						    echo '<div class="memberInfoHead" style="text-align: center; margin-bottom: 20px; font-size: 24px; font-weight: bold; color: #4CAF50;">' . __('My Library Card') . '</div>' . "\n";
-						    echo '</div>';
+                        // Add case by Erwan Setyo Budi
+                       case 'my_card':
+                            $qrcodePath = __DIR__ . DS . 'qrcode.min.js';
 
-						    echo '<div id="card-container" class="card" style="width: 320px; margin: 0 auto; text-align: center; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); background: linear-gradient(to bottom, #a8e063, #56ab2f);">';
+                            // Pastikan file ada sebelum digunakan
+                            if (file_exists($qrcodePath)) {
+                                $qrcodeUrl = str_replace(SB, SWB, $qrcodePath); // Ubah path lokal ke URL
+                                echo '<script src="' . $qrcodeUrl . '"></script>';
+                            } else {
+                                echo '<!-- qrcode.min.js not found -->';
+                            }
 
-						    // Header
-						    echo '<div class="card-header" style="background: linear-gradient(to right, #43cea2, #185a9d); color: #fff; padding: 15px; font-size: 18px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
-						    echo __('Library Membership Card');
-						    echo '</div>';
+                                // Tentukan nama file dan direktori dinamis
+                                $backgroundcardPath = __DIR__ . DS . 'background-card.png';
+                                $backgroundStyle = '';
 
-						    // Body
-						    echo '<div class="card-body" style="padding: 20px; background: linear-gradient(to bottom, #ffffff, #e9ecef);">';
-						    echo '<img src="' . $member_image_url . '" alt="Member Photo" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; border: 3px solid #4CAF50; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">';
-						    echo '<h5 style="margin: 10px 0; font-size: 20px; font-weight: bold; color: #4CAF50;">' . $_SESSION['m_name'] . '</h5>';
-						    echo '<p style="margin: 5px 0; font-size: 14px; color: #555;"><strong>' . __('Member ID:') . '</strong> ' . $_SESSION['mid'] . '</p>';
-						    echo '<p style="margin: 5px 0; font-size: 14px; color: #555;"><strong>' . __('Email:') . '</strong> ' . $_SESSION['m_email'] . '</p>';
-						    echo '<p style="margin: 5px 0; font-size: 14px; color: #555;"><strong>' . __('Institution:') . '</strong> ' . $_SESSION['m_institution'] . '</p>';
-						    echo '<center><div id="qrcode" style="margin-top: 15px;"></div></center>'; // QR code container
-						    echo '</div>';
+                                // Pastikan file ada sebelum digunakan
+                                if (file_exists($backgroundcardPath)) {
+                                    // Ubah path lokal ke URL yang sesuai
+                                    $backgroundcardUrl = str_replace(
+                                        DIRECTORY_SEPARATOR,
+                                        '/',
+                                        dirname($_SERVER['PHP_SELF']) . '/plugins/slims-member-area-card/pages/background-card.png'
+                                    );
+                                    $backgroundStyle = 'background-image: url(\'' . $backgroundcardUrl . '\'); background-size: cover; background-position: center;';
+                                } else {
+                                    echo '<!-- background-card.png not found -->';
+                                }
 
-						    // Footer
-						    echo '<div class="card-footer" style="background: linear-gradient(to right, #43cea2, #185a9d); color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
-						    echo __('Valid Until:') . ' ' . $_SESSION['m_expire_date'];
-						    echo '</div>';
+                                // Render kartu dengan background gambar
+                                echo '<div id="card-container" class="card" style="width: 320px; margin: 0 auto; text-align: center; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); background: #ffffff;">';
 
-						    echo '</div>';
+                                // Header dengan background setengah dan foto di tengah
+                                echo '<div class="header" style="height: 150px; position: relative; ' . $backgroundStyle . '">';
+                                echo '<div style="height: 50%; width: 100%; position: absolute; bottom: 0; left: 0;"></div>'; // Layer putih transparan di bagian bawah
+                                echo '<img src="' . $member_image_url . '" alt="Member Photo" style="width: 100px; height: 100px; border-radius: 50%; border: 5px solid white; position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);">';
+                                echo '</div>';
 
-						    // Fullscreen and Minimize Buttons
-						    echo '<div style="text-align: center; margin-top: 20px;">';
-						    echo '<button id="fullscreen-btn" style="padding: 10px 20px; font-size: 16px; color: #fff; background-color: #4CAF50; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">';
-						    echo __('Fullscreen');
-						    echo '</button>';
-						    echo '<button id="minimize-btn" style="padding: 10px 20px; font-size: 16px; color: #fff; background-color: #f44336; border: none; border-radius: 5px; cursor: pointer; display: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">';
-						    echo __('Minimize');
-						    echo '</button>';
-						    echo '</div>';
+                                // Body
+                                echo '<div class="body" style="padding: 60px 20px 20px; text-align: center;">';
+                                echo '<h3 style="margin: 0px 0; font-size: 35px; font-weight: bold; color: #d39c03;">' . $short_name . '</h3>';
+                                echo '<p style="margin: 5px 0; font-size: 14px; color: #777;"><strong>' . __('Member ID') . '</strong>: ' . $_SESSION['mid'] . '</p>';
+                                echo '<p style="margin: 5px 0; font-size: 14px; color: #777;"><strong>' . __('Member Type') . '</strong>: ' . $_SESSION['m_member_type'] . '</p>';
+                                echo '<p style="margin: 5px 0; font-size: 14px; color: #777;"><strong>' . __('Institution') . '</strong>: ' . $_SESSION['m_institution'] . '</p>';
+                                echo '<center><div id="qrcode" style="margin-top: 15px;"></div></center>';
+                                echo '</div>';
 
-						    // Script for QR code and fullscreen functionality
-						    echo '<script>';
-						    // QR Code script
-						    echo 'var qrcode = new QRCode(document.getElementById("qrcode"), {';
-						    echo '    text: "' . $_SESSION['mid'] . '",'; // Data QR code dari member ID
-						    echo '    width: 120,';
-						    echo '    height: 120,';
-						    echo '    colorDark: "#4CAF50",'; // Warna QR code
-						    echo '    colorLight: "#ffffff",'; // Latar belakang QR code
-						    echo '    correctLevel: QRCode.CorrectLevel.H';
-						    echo '});';
+                                echo '<div class="card-footer" style="background: #6093c1; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
+                                echo __('') . ' ' . $sysconf['library_name'] ;
+                                echo ' |';
+                                echo __('') . ' ' . $sysconf['library_subname'] ;
+                                echo '</div>';
 
-						    // Fullscreen functionality
-						    echo 'var fullscreenBtn = document.getElementById("fullscreen-btn");';
-						    echo 'var minimizeBtn = document.getElementById("minimize-btn");';
-						    echo 'var cardContainer = document.getElementById("card-container");';
+                                // Footer
+                                echo '<div class="card-footer" style="background: #125571; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
+                                echo __('Expiry Date') . ': ' . $_SESSION['m_expire_date'];
+                                echo '</div>';
 
-						    // Fullscreen event
-						    echo 'fullscreenBtn.addEventListener("click", function() {';
-						    echo '    if (cardContainer.requestFullscreen) {';
-						    echo '        cardContainer.requestFullscreen();';
-						    echo '    } else if (cardContainer.webkitRequestFullscreen) {';
-						    echo '        cardContainer.webkitRequestFullscreen();';
-						    echo '    } else if (cardContainer.msRequestFullscreen) {';
-						    echo '        cardContainer.msRequestFullscreen();';
-						    echo '    }';
-						    echo '    fullscreenBtn.style.display = "none";';
-						    echo '    minimizeBtn.style.display = "inline-block";';
-						    echo '});';
+                                echo '</div>';
 
-						    // Minimize event
-						    echo 'minimizeBtn.addEventListener("click", function() {';
-						    echo '    if (document.exitFullscreen) {';
-						    echo '        document.exitFullscreen();';
-						    echo '    } else if (document.webkitExitFullscreen) {';
-						    echo '        document.webkitExitFullscreen();';
-						    echo '    } else if (document.msExitFullscreen) {';
-						    echo '        document.msExitFullscreen();';
-						    echo '    }';
-						    echo '    fullscreenBtn.style.display = "inline-block";';
-						    echo '    minimizeBtn.style.display = "none";';
-						    echo '});';
+                                // Fullscreen, Minimize, and Print Buttons
+                                echo '<div style="text-align: center; margin-top: 20px;">';
+                                echo '<button id="fullscreen-btn" style="padding: 10px 20px; font-size: 16px; color: #fff; background-color: #4CAF50; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">';
+                                echo __('Fullscreen');
+                                echo '</button>';
+                                echo '<button id="minimize-btn" style="padding: 10px 20px; font-size: 16px; color: #fff; background-color: #f44336; border: none; border-radius: 5px; cursor: pointer; display: none; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">';
+                                echo __('Minimize');
+                                echo '</button>';
+                                echo '<button id="print-btn" style="padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">';
+                                echo __('Print');
+                                echo '</button>';
+                                echo '</div>';
 
-						    // Handle fullscreen change to ensure minimize button appears correctly
-						    echo 'document.addEventListener("fullscreenchange", function() {';
-						    echo '    if (!document.fullscreenElement) {';
-						    echo '        fullscreenBtn.style.display = "inline-block";';
-						    echo '        minimizeBtn.style.display = "none";';
-						    echo '    }';
-						    echo '});';
-						    echo '</script>';
-						    break;
+                                // QR Code and JavaScript for fullscreen and print
+                                echo '<script>';
+                                echo 'var qrcode = new QRCode(document.getElementById("qrcode"), {'; // Membuat QR code
+                                echo '    text: "' . $_SESSION['mid'] . '",';
+                                echo '    width: 120,';
+                                echo '    height: 120,';
+                                echo '    colorDark: "#125571",';
+                                echo '    colorLight: "#ffffff",';
+                                echo '    correctLevel: QRCode.CorrectLevel.H';
+                                echo '});';
 
+                                // Fullscreen functionality
+                                echo 'var fullscreenBtn = document.getElementById("fullscreen-btn");';
+                                echo 'var minimizeBtn = document.getElementById("minimize-btn");';
+                                echo 'var cardContainer = document.getElementById("card-container");';
+                                echo 'fullscreenBtn.addEventListener("click", function() {';
+                                echo '    if (cardContainer.requestFullscreen) {';
+                                echo '        cardContainer.requestFullscreen();';
+                                echo '    } else if (cardContainer.webkitRequestFullscreen) {';
+                                echo '        cardContainer.webkitRequestFullscreen();';
+                                echo '    } else if (cardContainer.msRequestFullscreen) {';
+                                echo '        cardContainer.msRequestFullscreen();';
+                                echo '    }';
+                                echo '    fullscreenBtn.style.display = "none";';
+                                echo '    minimizeBtn.style.display = "inline-block";';
+                                echo '});';
 
+                                // Exit fullscreen
+                                echo 'minimizeBtn.addEventListener("click", function() {';
+                                echo '    if (document.exitFullscreen) {';
+                                echo '        document.exitFullscreen();';
+                                echo '    } else if (document.webkitExitFullscreen) {';
+                                echo '        document.webkitExitFullscreen();';
+                                echo '    } else if (document.msExitFullscreen) {';
+                                echo '        document.msExitFullscreen();';
+                                echo '    }';
+                                echo '    fullscreenBtn.style.display = "inline-block";';
+                                echo '    minimizeBtn.style.display = "none";';
+                                echo '});';
 
-
-
-
-
-
+                                // Print functionality
+                                echo 'var printBtn = document.getElementById("print-btn");';
+                                echo 'printBtn.addEventListener("click", function() {';
+                                echo '    var printWindow = window.open("", "_blank");';
+                                echo '    printWindow.document.write("<html><head><title>' . __('Print Card') . '</title></head><body>");';
+                                echo '    printWindow.document.write(document.getElementById("card-container").outerHTML);';
+                                echo '    printWindow.document.write("</body></html>");';
+                                echo '    printWindow.document.close();';
+                                echo '    printWindow.print();';
+                                echo '});';
+                                echo '</script>';
+                                break;
                     }
                     ?>
                 </div>
