@@ -1,5 +1,18 @@
 # slims-member-area-card
 
+## Author
+**Name**: Erwan Setyo Budi  
+**Email**: erwans818@gmail.com
+
+## Plugin Information
+- **Plugin Name**: slims-member-area-card
+- **Author**: Erwan Setyo Budi
+- **SLiMS Version**: 9.6.1
+
+---
+Feel free to use and contribute to this project. For any issues or feedback, don’t hesitate to contact me!
+
+
 A plugin to enhance the Member Area functionality in SLiMS (Senayan Library Management System). This plugin introduces a visually appealing library membership card with features like QR code generation, fullscreen display, and dynamic interaction for members.
 
 ## Features
@@ -36,18 +49,6 @@ A plugin to enhance the Member Area functionality in SLiMS (Senayan Library Mana
 
 ## Compatibility
 This plugin has been tested with SLiMS version 9.6.1. Compatibility with earlier versions has not been verified.
-
-## Author
-**Name**: Erwan Setyo Budi  
-**Email**: erwans818@gmail.com
-
-## Plugin Information
-- **Plugin Name**: slims-member-area-card
-- **Author**: Erwan Setyo Budi
-- **SLiMS Version**: 9.6.1
-
----
-Feel free to use and contribute to this project. For any issues or feedback, don’t hesitate to contact me!
 
 
 
