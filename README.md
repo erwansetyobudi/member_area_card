@@ -1,63 +1,63 @@
-# Member Area Card
+# slims-member-area-card
 
-A plugin to enhance the **Member Area** functionality in SLiMS (Senayan Library Management System). This plugin introduces a visually appealing library membership card with features like QR code generation, fullscreen display, and dynamic interaction for members.
-
----
+A plugin to enhance the Member Area functionality in SLiMS (Senayan Library Management System). This plugin introduces a visually appealing library membership card with features like QR code generation, fullscreen display, and dynamic interaction for members.
 
 ## Features
-
 - **Library Membership Card**: Displays a personalized membership card with details such as name, ID, email, institution, and membership expiration date.
 - **QR Code Integration**: Automatically generates a QR code based on the member's ID.
 - **Fullscreen Mode**: Allows users to view the card in fullscreen mode for better visibility, especially on mobile devices.
 - **Responsive Design**: Optimized for both desktop and mobile devices with a modern and sleek UI.
 - **Easy Integration**: Plug-and-play setup compatible with SLiMS version 9.6.1.
 
----
-
 ## Requirements
-
 - **SLiMS Version**: 9.6.1 or later.
 - **JavaScript Library**: Includes `qrcode.min.js` for QR code generation.
 
----
-
 ## Installation Instructions
+1. **Download the Plugin**  
+   Download the plugin from [GitHub](https://github.com/erwansetyobudi/member_area_card).
 
-1. **Copy the Plugin File**  
-   Copy `member.inc.php` into the `lib` folder of your SLiMS installation.
+2. **Extract to Plugins Folder**  
+   Extract the downloaded plugin into the `plugins` folder of your SLiMS installation.
 
-2. **Add the JavaScript File**  
-   Place the `qrcode.min.js` file into the `js` folder of your SLiMS installation.
+3. **Ensure Correct Plugin Name**  
+   Ensure the folder name is `slims-member-area-card`.
 
-3. **Update the Member Area**  
-   Replace or merge your current member area script with the provided `member.inc.php` file.
+4. **Activate the Plugin**  
+   Log in as a super admin, click the "System" menu, select the "Plugin" submenu, and activate the plugin.
 
----
+
 
 ## How to Use
-
-- After installation, log in to the Member Area. 
-- Navigate to the **My Card** tab to view the updated membership card.
-- Use the **Fullscreen** button to expand the card, and the **Minimize** button to return to the normal view.
-
----
+1. Log in to the Member Area.
+2. Navigate to the "My Card" tab to view the updated membership card.
+3. Use the **Fullscreen** button to expand the card, and the **Minimize** button to return to the normal view.
 
 ## Compatibility
-
 This plugin has been tested with SLiMS version 9.6.1. Compatibility with earlier versions has not been verified.
 
----
-
 ## Author
+**Name**: Erwan Setyo Budi  
+**Email**: erwans818@gmail.com
 
-Created by **Erwan Setyo Budi**  
-For feedback or support, please contact: [erwans818@gmail.com](mailto:erwans818@gmail.com)
+## Plugin Information
+- **Plugin Name**: slims-member-area-card
+- **Author**: Erwan Setyo Budi
+- **SLiMS Version**: 9.6.1
+
+## Quick Installation Steps
+1. Download the plugin from [GitHub](https://github.com/erwansetyobudi/member_area_card).
+2. Extract the plugin into the `plugins` folder of your SLiMS installation.
+3. Ensure the folder name is `slims-member-area-card`.
+4. Activate the plugin by logging in as a super admin, navigating to the "System" menu, selecting "Plugin," and enabling the plugin.
+5. Check the Member Area to find the "My Card" tab with the updated features.
 
 ---
+Feel free to use and contribute to this project. For any issues or feedback, don’t hesitate to contact me!
 
-Feel free to copy this improved description into your README file!
+
 
 ## Screen Shoot
-![Screenshot 2025-01-09 at 16-40-59 Online MeSH and DDC Integrated Syste OMDIS](https://github.com/user-attachments/assets/bca5056b-79d6-4cde-8eac-76d553123171)
 
+![Screenshot 2025-01-16 at 21-18-23 member](https://github.com/user-attachments/assets/a0e8cb8c-3d26-4367-afc0-a88423af22e6)
 
