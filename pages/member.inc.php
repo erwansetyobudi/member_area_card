@@ -883,7 +883,7 @@ if ($is_member_login) :
                                     $backgroundcardUrl = str_replace(
                                         DIRECTORY_SEPARATOR,
                                         '/',
-                                        dirname($_SERVER['PHP_SELF']) . '/plugins/slims-member-area-card/pages/background-card.png'
+                                        dirname($_SERVER['PHP_SELF']) . './plugins/member-area-card/pages/background-card.png'
                                     );
                                     $backgroundStyle = 'background-image: url(\'' . $backgroundcardUrl . '\'); background-size: cover; background-position: center;';
                                 } else {
