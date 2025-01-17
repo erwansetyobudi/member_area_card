@@ -883,7 +883,7 @@ if ($is_member_login) :
                                     $backgroundcardUrl = str_replace(
                                         DIRECTORY_SEPARATOR,
                                         '/',
-                                        dirname($_SERVER['PHP_SELF']) . './plugins/member_area_card/pages/background-card.png'
+                                        dirname($_SERVER['PHP_SELF']) . '/plugins/member_area_card/pages/background-card.png'
                                     );
                                     $backgroundStyle = 'background-image: url(\'' . $backgroundcardUrl . '\'); background-size: cover; background-position: center;';
                                 } else {
@@ -910,7 +910,7 @@ if ($is_member_login) :
 
                                 echo '<div class="card-footer" style="background: #6093c1; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
                                 echo __('') . ' ' . $sysconf['library_name'] ;
-                                echo ' |';
+                                echo '</br>';
                                 echo __('') . ' ' . $sysconf['library_subname'] ;
                                 echo '</div>';
 
