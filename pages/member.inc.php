@@ -873,15 +873,19 @@ if ($is_member_login) :
                                 echo '<!-- qrcode.min.js not found -->';
                             }
 
+
+                                $backgroundcardPath = __DIR__ . DIRECTORY_SEPARATOR . 'background-card.png';
+                                $backgroundStyle = '';
+
                                 $plugin_dir = basename(dirname(realpath(__DIR__ . '/../membercard_opac.plugin.php')));
-                                
+
                                 // Pastikan file ada sebelum digunakan
                                 if (file_exists($backgroundcardPath)) {
                                     // Ubah path lokal ke URL yang sesuai
                                     $backgroundcardUrl = str_replace(
                                         DIRECTORY_SEPARATOR,
                                         '/',
-                                        dirname($_SERVER['PHP_SELF']) . '/plugins/'.$plugin_dir.'/pages/background-card.png'
+                                        dirname($_SERVER['PHP_SELF']) . '/plugins/' . $plugin_dir . '/pages/background-card.png'
                                     );
                                     $backgroundStyle = 'background-image: url(\'' . $backgroundcardUrl . '\'); background-size: cover; background-position: center;';
                                 } else {
