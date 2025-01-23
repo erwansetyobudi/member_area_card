@@ -873,17 +873,15 @@ if ($is_member_login) :
                                 echo '<!-- qrcode.min.js not found -->';
                             }
 
-                                // Tentukan nama file dan direktori dinamis
-                                $backgroundcardPath = __DIR__ . DS . 'background-card.png';
-                                $backgroundStyle = '';
-
+                                $plugin_dir = basename(dirname(realpath(__DIR__ . '/../membercard_opac.plugin.php')));
+                                
                                 // Pastikan file ada sebelum digunakan
                                 if (file_exists($backgroundcardPath)) {
                                     // Ubah path lokal ke URL yang sesuai
                                     $backgroundcardUrl = str_replace(
                                         DIRECTORY_SEPARATOR,
                                         '/',
-                                        dirname($_SERVER['PHP_SELF']) . '/plugins/member_area_card/pages/background-card.png'
+                                        dirname($_SERVER['PHP_SELF']) . '/plugins/'.$plugin_dir.'/pages/background-card.png'
                                     );
                                     $backgroundStyle = 'background-image: url(\'' . $backgroundcardUrl . '\'); background-size: cover; background-position: center;';
                                 } else {
@@ -909,9 +907,9 @@ if ($is_member_login) :
                                 echo '</div>';
 
                                 echo '<div class="card-footer" style="background: #6093c1; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
-                                echo __('') . ' ' . $sysconf['library_name'] ;
+                                echo ' ' . $sysconf['library_name'] ;
                                 echo '</br>';
-                                echo __('') . ' ' . $sysconf['library_subname'] ;
+                                echo ' ' . $sysconf['library_subname'] ;
                                 echo '</div>';
 
                                 // Footer
