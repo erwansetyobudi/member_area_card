@@ -11,7 +11,7 @@
 use SLiMS\Plugins;
 $plugins = Plugins::getInstance();
 
-if (str_replace(['.','v'], '', SENAYAN_VERSION_TAG) >= '961') {
-    $plugins->registerMenu('opac', 'member', __DIR__ . '/pages/member.inc.php');
-    $plugins->registerMenu('opac', 'member_card', __DIR__ . '/pages/member_card.inc.php');
-}
+
+$plugins->registerMenu('opac', 'member', __DIR__ . '/pages/member.inc.php');
+$plugins->registerMenu('opac', 'member_card', __DIR__ . '/pages/member_card.inc.php');
+$plugins->registerMenu('bibliography', 'Usul Buku', __DIR__ . '/pages/usulan_buku_list.php');

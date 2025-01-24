@@ -787,7 +787,7 @@ if ($is_member_login) :
                     $short_name = implode(' ', array_slice($name_parts, 0, 2));
                     $tabs_menus = [
                         'current_loan' => [
-                            'text' => __('Current Loan'),
+                            'text' => __('Loan'),
                             'link' => 'index.php?p=member'
                         ],
                         'bookmark' => [
@@ -798,17 +798,21 @@ if ($is_member_login) :
                             'text' => __('Title Basket'),
                             'link' => 'index.php?p=member&sec=title_basket'
                         ],
-                        'loan_history' => [
-                            'text' => __('Loan History'),
-                            'link' => 'index.php?p=member&sec=loan_history'
-                        ],
                         'my_account' => [
                             'text' => __('My Account'),
                             'link' => 'index.php?p=member&sec=my_account'
                         ],
+                         'database_cards' => [
+                            'text' => __('My Resources'),
+                            'link' => 'index.php?p=member&sec=database_cards'
+                        ],
                          'my_card' => [
                             'text' => __('My Card'),
                             'link' => 'index.php?p=member&sec=my_card'
+                        ],
+                         'usul_buku' => [
+                            'text' => __('Usul Buku'),
+                            'link' => 'index.php?p=member&sec=usul_buku'
                         ]
                     ];
                     $section = isset($_GET['sec']) ? trim($_GET['sec']) : 'current_loan';
@@ -829,6 +833,12 @@ if ($is_member_login) :
                             echo '<div class="memberInfoHead">' . __('My Current Loan') . '</div>' . "\n";
                             echo '</div>';
                             echo showLoanList();
+                            echo '</br><hr></br>';
+
+                            echo '<div class="tagline">';
+                            echo '<div class="memberInfoHead">' . __('My Loan History') . '</div>' . "\n";
+                            echo '</div>';
+                            echo showLoanHist();
                             break;
                         case 'bookmark':
                             echo '<div class="tagline">';
@@ -842,12 +852,7 @@ if ($is_member_login) :
                             echo '</div>';
                             echo showBasket();
                             break;
-                        case 'loan_history':
-                            echo '<div class="tagline">';
-                            echo '<div class="memberInfoHead">' . __('My Loan History') . '</div>' . "\n";
-                            echo '</div>';
-                            echo showLoanHist();
-                            break;
+                        
                         case 'my_account':
                             echo '<div class="tagline">';
                             echo '<div class="memberInfoHead">' . __('Member Detail') . '</div>' . "\n";
@@ -861,8 +866,179 @@ if ($is_member_login) :
                                 echo changePassword();
                             // }
                             break;
+
                         // Add case by Erwan Setyo Budi
-                       case 'my_card':
+                        case 'database_cards':
+                        $databases = [
+                            
+                            [
+                                'name' => 'PubMed',
+                                'url' => 'https://pubmed.ncbi.nlm.nih.gov',
+                                'background' => 'plugins/member_area_card/pages/pubmed.png',
+                                'description' => 'Database of biomedical literature from MEDLINE.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'DOAJ (Directory of Open Access Journals)',
+                                'url' => 'https://doaj.org',
+                                'background' => 'plugins/member_area_card/pages/doaj.png',
+                                'description' => 'A directory of high-quality, open access journals.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'PLOS ONE',
+                                'url' => 'https://journals.plos.org/plosone/',
+                                'background' => 'plugins/member_area_card/pages/plosone.png',
+                                'description' => 'An inclusive open-access journal for science.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'PubMed Central',
+                                'url' => 'https://www.ncbi.nlm.nih.gov/pmc/',
+                                'background' => 'plugins/member_area_card/pages/pubmedcentral.png',
+                                'description' => 'A free full-text archive of biomedical literature.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'Directory of Open Access Books',
+                                'url' => 'https://www.doabooks.org',
+                                'background' => 'plugins/member_area_card/pages/doab.png',
+                                'description' => 'Access a directory of open access books.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'ERIC (Education Resources Information Center)',
+                                'url' => 'https://eric.ed.gov',
+                                'background' => 'plugins/member_area_card/pages/eric.png',
+                                'description' => 'An open access database for educational literature.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'OAPEN',
+                                'url' => 'https://www.oapen.org',
+                                'background' => 'plugins/member_area_card/pages/oapen.png',
+                                'description' => 'Provides access to quality controlled open access books.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'BioMed Central',
+                                'url' => 'https://www.biomedcentral.com',
+                                'background' => 'plugins/member_area_card/pages/biomedcentral.png',
+                                'description' => 'Publishes open access journals in science, technology, and medicine.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'Open Library',
+                                'url' => 'https://openlibrary.org',
+                                'background' => 'plugins/member_area_card/pages/openlibrary.png',
+                                'description' => 'A digital library of free books accessible to all.',
+                                'label' => 'Open Access'
+                            ],
+                            [
+                                'name' => 'SpringerLink',
+                                'url' => 'https://link.springer.com',
+                                'background' => 'plugins/member_area_card/pages/springerlink.png',
+                                'description' => 'Access articles, books, and research from Springer.',
+                                'label' => 'Hybrid'
+                            ],
+                            [
+                                'name' => 'IEEE Xplore',
+                                'url' => 'https://ieeexplore.ieee.org',
+                                'background' => 'plugins/member_area_card/pages/ieee.png',
+                                'description' => 'A digital library for engineering and technology.',
+                                'label' => 'Hybrid'
+                            ],
+                            [
+                                'name' => 'ScienceDirect',
+                                'url' => 'https://www.sciencedirect.com',
+                                'background' => 'plugins/member_area_card/pages/sciencedirect.png',
+                                'description' => 'A leading full-text scientific database.',
+                                'label' => 'Hybrid'
+                            ],
+                            [
+                                'name' => 'EresourcesPnri',
+                                'url' => 'https://e-resources.perpusnas.go.id/',
+                                'background' => 'plugins/member_area_card/pages/pnri.png',
+                                'description' => 'Premium Resources from Indonesian Goverment.',
+                                'label' => 'Hybrid'
+                            ],
+                            [
+                                'name' => 'OneSearch',
+                                'url' => 'https://onesearch.id/',
+                                'background' => 'plugins/member_area_card/pages/OneSearch.png',
+                                'description' => 'One-stop search for all public collections from libraries in Indonesia',
+                                'label' => 'Indexer'
+                            ],
+                            [
+                                'name' => 'Scopus',
+                                'url' => 'https://www.scopus.com/',
+                                'background' => 'plugins/member_area_card/pages/scopus.png',
+                                'description' => 'International Journal Indexer',
+                                'label' => 'Indexer'
+                            ],
+                            [
+                                'name' => 'Sinta',
+                                'url' => 'https://sinta.kemdikbud.go.id/',
+                                'background' => 'plugins/member_area_card/pages/sinta.png',
+                                'description' => 'Indonesian Journal Indexer',
+                                'label' => 'Indexer'
+                            ],
+                            [
+                                'name' => 'Mendeley',
+                                'url' => 'https://www.mendeley.com/',
+                                'background' => 'plugins/member_area_card/pages/mendeley.png',
+                                'description' => 'Reference Manager Tools : Making biliographic data easier',
+                                'label' => 'Tools'
+                            ],
+                            [
+                                'name' => 'Zotero',
+                                'url' => 'https://www.zotero.org/',
+                                'background' => 'plugins/member_area_card/pages/zotero.png',
+                                'description' => 'Reference Manager Tools : Making biliographic data easier',
+                                'label' => 'Tools'
+                            ],
+                            [
+                                'name' => 'VosViewer',
+                                'url' => 'https://www.vosviewer.com/',
+                                'background' => 'plugins/member_area_card/pages/vosviewer.png',
+                                'description' => 'VOSviewer is a software tool for constructing and visualizing bibliometric networks',
+                                'label' => 'Tools'
+                            ],
+                            [
+                                'name' => 'Pop',
+                                'url' => 'https://harzing.com/resources/publish-or-perish',
+                                'background' => 'plugins/member_area_card/pages/pop.png',
+                                'description' => 'Publish or Perish is a software program that retrieves and analyzes academic citations',
+                                'label' => 'Tools'
+                            ]
+                        
+                        ];
+
+
+                            echo '<div style="display: flex; justify-content: space-around; flex-wrap: wrap;">';
+
+                        foreach ($databases as $db) {
+                            echo '<div class="card" style="width: 22%; margin: 10px; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background: #fff;">';
+                            echo '<div class="card-header" style="height: 150px; background-image: url(' . $db['background'] . '); background-size: cover; background-position: center; position: relative;">';
+                            if (isset($db['label'])) {
+                                echo '<span style="position: absolute; top: 10px; left: 10px; background-color: #28a745; color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 12px;">' . $db['label'] . '</span>';
+                            }
+                            echo '</div>';
+                            echo '<div class="card-body" style="padding: 15px; text-align: center;">';
+                            echo '<h3 style="font-size: 18px; font-weight: bold; margin: 0 0 10px;">' . $db['name'] . '</h3>';
+                            echo '<p style="font-size: 14px; color: #555; margin: 0 0 10px;">' . $db['description'] . '</p>';
+                            echo '<a href="' . $db['url'] . '" target="_blank" style="font-size: 14px; color: #007BFF; text-decoration: none;">Visit Website</a>';
+                            echo '</div>';
+                            echo '</div>';
+                        }
+
+                        echo '</div>';
+
+                        break;
+
+
+
+                        case 'my_card':
                             $qrcodePath = __DIR__ . DS . 'qrcode.min.js';
 
                             // Pastikan file ada sebelum digunakan
@@ -988,6 +1164,260 @@ if ($is_member_login) :
                                 echo '});';
                                 echo '</script>';
                                 break;
+                        case 'usul_buku':
+                            // Pastikan file ini tidak dapat diakses langsung
+                            if (!defined('INDEX_AUTH')) {
+                                die("cannot access this file directly");
+                            } elseif (INDEX_AUTH != 1) {
+                                die("cannot access this file directly");
+                            }
+
+                            // Cek apakah user sudah login
+                            if (!$is_member_login) {
+                                die("Please login to manage your book suggestions.");
+                            }
+
+                            // Jika form usulan baru dikirimkan
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_usulan'])) {
+                                $nama_lengkap = $_SESSION['m_name'];
+                                $nomor_anggota = $_SESSION['mid'];
+                                $institution = $_SESSION['m_institution'];
+                                $kontak = $_SESSION['m_email'];
+                                $judul_buku = trim($_POST['judul_buku']);
+                                $pengarang = trim($_POST['pengarang']);
+                                $tahun_terbit = trim($_POST['tahun_terbit']);
+                                $penerbit = trim($_POST['penerbit']);
+                                $isbn = trim($_POST['isbn']);
+                                $kategori = isset($_POST['kategori']) ? implode(', ', $_POST['kategori']) : '';
+                                $format = isset($_POST['format']) ? implode(', ', $_POST['format']) : '';
+                                $bahasa = trim($_POST['bahasa']);
+                                $harga = trim($_POST['harga']);
+                                $tautan = trim($_POST['tautan']);
+                                $alasan = trim($_POST['alasan']);
+
+                                if (empty($judul_buku) || empty($alasan)) {
+                                    $_SESSION['info'] = [
+                                        'status' => 'danger',
+                                        'data' => 'Judul buku dan alasan wajib diisi!'
+                                    ];
+                                    header('Location: ?p=member&sec=usul_buku');
+                                    exit();
+                                }
+
+                                // Cek apakah sedang melakukan edit
+                                if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
+                                    $edit_id = intval($_POST['edit_id']);
+                                    $sql = "UPDATE usulan_buku 
+                                            SET judul_buku = ?, pengarang = ?, tahun_terbit = ?, penerbit = ?, isbn = ?, kategori = ?, format = ?, bahasa = ?, harga = ?, tautan = ?, alasan = ? 
+                                            WHERE id = ? AND nomor_anggota = ?";
+                                    $params = [
+                                        $judul_buku, $pengarang, $tahun_terbit, $penerbit, $isbn, $kategori, $format, $bahasa, $harga, $tautan, $alasan, $edit_id, $nomor_anggota
+                                    ];
+                                    $success_message = "Usulan buku berhasil diperbarui.";
+                                } else {
+                                    $sql = "INSERT INTO usulan_buku 
+                                            (nama_lengkap, nomor_anggota, institution, kontak, judul_buku, pengarang, tahun_terbit, penerbit, isbn, kategori, format, bahasa, harga, tautan, alasan, tanggal_usulan) 
+                                            VALUES 
+                                            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+                                    $params = [
+                                        $nama_lengkap, $nomor_anggota, $institution, $kontak, $judul_buku, $pengarang, $tahun_terbit, $penerbit, $isbn, $kategori, $format, $bahasa, $harga, $tautan, $alasan
+                                    ];
+                                    $success_message = "Usulan buku berhasil dikirim.";
+                                }
+
+                                try {
+                                    $stmt = DB::getInstance()->prepare($sql);
+                                    $stmt->execute($params);
+                                    $_SESSION['info'] = [
+                                        'status' => 'success',
+                                        'data' => $success_message
+                                    ];
+                                } catch (PDOException $e) {
+                                    $_SESSION['info'] = [
+                                        'status' => 'danger',
+                                        'data' => 'Gagal menyimpan data. Silakan coba lagi.'
+                                    ];
+                                }
+
+                                header('Location: ?p=member&sec=usul_buku');
+                                exit();
+                            }
+
+                            // Jika pengguna ingin menghapus usulan
+                            if (isset($_GET['delete_id'])) {
+                                $delete_id = intval($_GET['delete_id']);
+                                $nomor_anggota = $_SESSION['mid'];
+                                $sql = "DELETE FROM usulan_buku WHERE id = ? AND nomor_anggota = ?";
+                                try {
+                                    $stmt = DB::getInstance()->prepare($sql);
+                                    $stmt->execute([$delete_id, $nomor_anggota]);
+                                    $_SESSION['info'] = [
+                                        'status' => 'success',
+                                        'data' => 'Usulan buku berhasil dihapus.'
+                                    ];
+                                } catch (PDOException $e) {
+                                    $_SESSION['info'] = [
+                                        'status' => 'danger',
+                                        'data' => 'Gagal menghapus usulan buku. Silakan coba lagi.'
+                                    ];
+                                }
+                                header('Location: ?p=member&sec=usul_buku');
+                                exit();
+                            }
+
+                            // Halaman usulan buku
+                            if ($section === 'usul_buku') {
+                                echo '<h2>Usulan Buku</h2>';
+                                echo isset($_SESSION['info']) ? '<div class="alert alert-' . $_SESSION['info']['status'] . '">' . $_SESSION['info']['data'] . '</div>' : '';
+
+                                // Form usulan buku
+                                $edit_data = null;
+                                if (isset($_GET['edit_id'])) {
+                                    $edit_id = intval($_GET['edit_id']);
+                                    $nomor_anggota = $_SESSION['mid'];
+                                    $sql = "SELECT * FROM usulan_buku WHERE id = ? AND nomor_anggota = ?";
+                                    $stmt = DB::getInstance()->prepare($sql);
+                                    $stmt->execute([$edit_id, $nomor_anggota]);
+                                    $edit_data = $stmt->fetch(PDO::FETCH_ASSOC);
+                                }
+
+                                echo '<form method="POST" action="?p=member&sec=usul_buku">';
+                            if ($edit_data) {
+                                echo '<input type="hidden" name="edit_id" value="' . htmlspecialchars($edit_data['id']) . '">';
+                            }
+
+                                // Tambahkan gaya CSS untuk dua kolom
+                                echo '<style>
+                                        .form-container {
+                                            display: flex;
+                                            flex-wrap: wrap;
+                                            gap: 16px;
+                                        }
+                                        .form-group {
+                                            flex: 1 1 calc(50% - 16px);
+                                            box-sizing: border-box;
+                                        }
+                                        .form-group-full {
+                                            flex: 1 1 100%;
+                                        }
+                                    </style>';
+
+                                echo '<div class="form-container">';
+
+                                // Kolom pertama dan kedua
+                                echo '<div class="form-group">';
+                                echo '<label>Judul Buku:</label>';
+                                echo '<input type="text" name="judul_buku" class="form-control" value="' . htmlspecialchars($edit_data['judul_buku'] ?? '') . '" required>';
+                                echo '</div>';
+
+                                echo '<div class="form-group">';
+                                echo '<label>Pengarang:</label>';
+                                echo '<input type="text" name="pengarang" class="form-control" value="' . htmlspecialchars($edit_data['pengarang'] ?? '') . '">';
+                                echo '</div>';
+
+                                // Kolom ketiga dan keempat
+                                echo '<div class="form-group">';
+                                echo '<label>Tahun Terbit:</label>';
+                                echo '<input type="number" name="tahun_terbit" class="form-control" value="' . htmlspecialchars($edit_data['tahun_terbit'] ?? '') . '">';
+                                echo '</div>';
+
+                                echo '<div class="form-group">';
+                                echo '<label>Penerbit:</label>';
+                                echo '<input type="text" name="penerbit" class="form-control" value="' . htmlspecialchars($edit_data['penerbit'] ?? '') . '">';
+                                echo '</div>';
+
+                                // Kolom kelima dan keenam
+                                echo '<div class="form-group">';
+                                echo '<label>ISBN:</label>';
+                                echo '<input type="text" name="isbn" class="form-control" value="' . htmlspecialchars($edit_data['isbn'] ?? '') . '">';
+                                echo '</div>';
+
+                                echo '<div class="form-group">';
+                                echo '<label>Kategori:</label><br>';
+                                $categories = ['Fiksi', 'Non-Fiksi', 'Buku Pelajaran', 'Referensi', 'Lainnya'];
+                                foreach ($categories as $category) {
+                                    $checked = isset($edit_data) && in_array($category, explode(', ', $edit_data['kategori'] ?? '')) ? 'checked' : '';
+                                    echo '<label><input type="checkbox" name="kategori[]" value="' . $category . '" ' . $checked . '> ' . $category . '</label><br>';
+                                }
+                                echo '</div>';
+
+                                // Format buku
+                                echo '<div class="form-group">';
+                                echo '<label>Jenis Format Buku:</label><br>';
+                                $formats = ['Buku Cetak', 'Buku Digital (e-Book)', 'Audio Book'];
+                                foreach ($formats as $format) {
+                                    $checked = isset($edit_data) && in_array($format, explode(', ', $edit_data['format'] ?? '')) ? 'checked' : '';
+                                    echo '<label><input type="checkbox" name="format[]" value="' . $format . '" ' . $checked . '> ' . $format . '</label><br>';
+                                }
+                                echo '</div>';
+
+                                // Kolom ketujuh dan kedelapan
+                                echo '<div class="form-group">';
+                                echo '<label>Bahasa:</label>';
+                                echo '<input type="text" name="bahasa" class="form-control" value="' . htmlspecialchars($edit_data['bahasa'] ?? '') . '">';
+                                echo '</div>';
+
+                                echo '<div class="form-group">';
+                                echo '<label>Harga:</label>';
+                                echo '<input type="text" name="harga" class="form-control" value="' . htmlspecialchars($edit_data['harga'] ?? '') . '">';
+                                echo '</div>';
+
+                                // Kolom kesembilan (full-width)
+                                echo '<div class="form-group-full">';
+                                echo '<label>Tautan:</label>';
+                                echo '<input type="url" name="tautan" class="form-control" value="' . htmlspecialchars($edit_data['tautan'] ?? '') . '">';
+                                echo '</div>';
+
+                                echo '<div class="form-group-full">';
+                                echo '<label>Alasan:</label>';
+                                echo '<textarea name="alasan" class="form-control" required>' . htmlspecialchars($edit_data['alasan'] ?? '') . '</textarea>';
+                                echo '</div>';
+
+                                // Tombol submit
+                                echo '<div class="form-group-full">';
+                                echo '<button type="submit" name="submit_usulan" class="btn btn-primary">Simpan</button>';
+                                echo '</div>';
+
+                                echo '</div>'; // Tutup .form-container
+                                echo '</form>';
+
+
+                                // Tampilkan daftar usulan pengguna
+                                echo '<br><hr><h3>Daftar Usulan Anda</h3>';
+                                $nomor_anggota = $_SESSION['mid'];
+                                $sql = "SELECT * FROM usulan_buku WHERE nomor_anggota = ? ORDER BY tanggal_usulan DESC";
+                                $stmt = DB::getInstance()->prepare($sql);
+                                $stmt->execute([$nomor_anggota]);
+                                $usulan_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                                if ($usulan_list) {
+                                    echo '<table class="table">';
+                                    echo '<thead><tr><th>Judul Buku</th><th>Tanggal Usulan</th><th>Tanggapan</th><th>Aksi</th></tr></thead><tbody>';
+                                    foreach ($usulan_list as $usulan) {
+                                        echo '<tr>';
+                                        echo '<td>' . htmlspecialchars($usulan['judul_buku']) . '</td>';
+                                        echo '<td>' . htmlspecialchars($usulan['tanggal_usulan']) . '</td>';
+                                        echo '<td>' . (!empty($usulan['tanggapan']) ? htmlspecialchars($usulan['tanggapan']) : 'Sedang dalam kajian') . '</td>';
+                                        echo '<td>';
+                                        
+                                        // Periksa apakah kolom "tanggapan" sudah terisi
+                                        if (empty($usulan['tanggapan'])) {
+                                            echo '<a href="?p=member&sec=usul_buku&edit_id=' . $usulan['id'] . '" class="btn btn-warning btn-sm">Edit</a> ';
+                                            echo '<a href="?p=member&sec=usul_buku&delete_id=' . $usulan['id'] . '" class="btn btn-danger btn-sm" onclick="return confirm(\'Yakin ingin menghapus?\')">Delete</a>';
+                                        } else {
+                                            echo '<span class="text-muted">Tidak dapat diedit atau dihapus</span>';
+                                        }
+
+                                        echo '</td>';
+                                        echo '</tr>';
+                                    }
+                                    echo '</tbody></table>';
+                                } else {
+                                    echo '<p>Anda belum mengusulkan buku.</p>';
+                                }
+
+                            }
+                            break;
                     }
                     ?>
                 </div>
