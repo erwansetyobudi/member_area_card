@@ -1072,25 +1072,27 @@ if ($is_member_login) :
                                 echo '<div id="card-container" class="card" style="width: 320px; margin: 0 auto; text-align: center; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); background: #ffffff;">';
 
                                 // Header dengan background setengah dan foto di tengah
+
                                 echo '<div class="header" style="height: 150px; position: relative; ' . $backgroundStyle . '">';
+                                echo '<div class="header" style="background: #125571eb; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
+                                echo ' ' . $sysconf['library_name'] ;
+                                echo '</br>';
+                                echo ' ' . $sysconf['library_subname'] ;
+                                echo '</div>';
                                 echo '<div style="height: 50%; width: 100%; position: absolute; bottom: 0; left: 0;"></div>'; // Layer putih transparan di bagian bawah
                                 echo '<img src="' . $member_image_url . '" alt="Member Photo" style="width: 100px; height: 100px; border-radius: 50%; border: 5px solid white; position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);">';
                                 echo '</div>';
 
                                 // Body
-                                echo '<div class="body" style="padding: 60px 20px 20px; text-align: center;">';
+                                echo '<div class="body" style="padding: 50px 20px 20px; text-align: center;">';
                                 echo '<h3 style="margin: 0px 0; font-size: 35px; font-weight: bold; color: #d39c03;">' . $short_name . '</h3>';
-                                echo '<p style="margin: 5px 0; font-size: 14px; color: #777;"><strong>' . __('Member ID') . '</strong>: ' . $_SESSION['mid'] . '</p>';
-                                echo '<p style="margin: 5px 0; font-size: 14px; color: #777;"><strong>' . __('Member Type') . '</strong>: ' . $_SESSION['m_member_type'] . '</p>';
-                                echo '<p style="margin: 5px 0; font-size: 14px; color: #777;"><strong>' . __('Institution') . '</strong>: ' . $_SESSION['m_institution'] . '</p>';
+                                echo '<p style="margin: 0px 0; font-size: 14px; color: #777;"><strong>' . __('Member ID') . '</strong>: ' . $_SESSION['mid'] . '</p>';
+                                echo '<p style="margin: 0px 0; font-size: 14px; color: #777;"><strong>' . __('Member Type') . '</strong>: ' . $_SESSION['m_member_type'] . '</p>';
+                                echo '<p style="margin: 0px 0; font-size: 14px; color: #777;"><strong>' . __('Institution') . '</strong>: ' . $_SESSION['m_institution'] . '</p>';
                                 echo '<center><div id="qrcode" style="margin-top: 15px;"></div></center>';
                                 echo '</div>';
 
-                                echo '<div class="card-footer" style="background: #6093c1; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
-                                echo ' ' . $sysconf['library_name'] ;
-                                echo '</br>';
-                                echo ' ' . $sysconf['library_subname'] ;
-                                echo '</div>';
+                                
 
                                 // Footer
                                 echo '<div class="card-footer" style="background: #125571; color: #fff; padding: 10px; font-size: 12px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">';
