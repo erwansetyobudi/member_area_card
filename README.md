@@ -18,6 +18,8 @@ A plugin to enhance the Member Area functionality in SLiMS (Senayan Library Mana
 ## Features
 - **Library Membership Card**: Displays a personalized membership card with details such as name, ID, email, institution, and membership expiration date.
 - **QR Code Integration**: Automatically generates a QR code based on the member's ID.
+- **Electronic Resources**: There are electronic resources to support the learning process at your institution.
+- **Book Ask**: There is a book proposal form.
 - **Fullscreen Mode and Print**: Allows users to view the card in fullscreen mode for better visibility, especially on mobile devices and print it.
 - **Responsive Design**: Optimized for both desktop and mobile devices with a modern and sleek UI.
 - **Easy Integration**: Plug-and-play setup compatible with SLiMS version 9.6.1.
