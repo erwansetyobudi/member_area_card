@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Digital Member Card
  * Plugin URI: https://github.com/erwansetyobudi/member_area_card
- * Description: This plugin show digital card ini member area. Modified form plugin Membercard OPAC Drajat Hasan
+ * Description: This plugin show digital card ini member area.
  * Version: 1.0.0
  * Author: Erwan Setyo Budi
  * 
