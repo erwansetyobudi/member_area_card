@@ -1,9 +1,9 @@
 <?php
 /**
- * @author Drajat Hasan
- * @email drajathasan20@gmail.com
- * @create date 2021-11-04 09:24:23
- * @modify date 2025-01-24
+ * @author Erwan Setyo Budi
+ * @email erwans818@gmail.com
+ * @create date 2025-01-26 06:37:37
+ * @modify date 2025-01-26
  * @desc Migration untuk tabel usulan_buku
  */
 
@@ -35,6 +35,8 @@ class CreateTable extends \SLiMS\Migration\Migration
             `alasan` TEXT NOT NULL,
             `tanggal_usulan` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `tanggapan` TEXT DEFAULT NULL,
+            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
