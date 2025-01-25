@@ -57,5 +57,5 @@ This plugin has been tested with SLiMS version 9.6.1. Compatibility with earlier
 ## Screen Shoot
 
 
-![preview](https://github.com/user-attachments/assets/2011199b-e96c-4204-b910-d5fc660df676)
+![preview](https://github.com/user-attachments/assets/748f5ca6-1a7f-458f-9c51-6542520b9e7f)
 
