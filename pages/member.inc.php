@@ -965,7 +965,7 @@ if ($is_member_login) :
                             [
                                 'name' => 'OneSearch',
                                 'url' => 'https://onesearch.id/',
-                                'background' => 'plugins/member_area_card/pages/OneSearch.png',
+                                'background' => 'plugins/member_area_card/pages/onesearch.png',
                                 'description' => 'One-stop search for all public collections from libraries in Indonesia',
                                 'label' => 'Indexer'
                             ],
