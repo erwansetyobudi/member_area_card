@@ -244,6 +244,55 @@ if ($is_member_login) :
        *
        * @return      string
        */
+        function updateMemberInfo() {
+        return '<form id="updateMemberInfo" method="post" enctype="multipart/form-data" action="index.php?p=member&sec=my_account">
+            <table class="memberDetail table table-striped" cellpadding="5" cellspacing="0">
+                <tr>
+                    <td class="key alterCell" width="20%"><strong>' . __('New Email') . '</strong></td>
+                    <td class="value alterCell2"><input type="email" name="new_email" class="form-control" placeholder="Enter new email" value="' . $_SESSION['m_email'] . '" required/></td>
+                </tr>
+                <tr>
+                    <td class="key alterCell" width="20%"><strong>' . __('Profile Picture') . '</strong></td>
+                    <td class="value alterCell2"><input type="file" name="profile_image" class="form-control" accept="image/*" /></td>
+                </tr>
+                <tr>
+                    <td class="alterCell2" colspan="2"><input class="btn btn-primary" type="submit" name="update_info" value="' . __('Update Info') . '" /></td>
+                </tr>
+            </table>
+        </form>';
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_info'])) {
+        $new_email = trim($_POST['new_email']);
+        $upload_dir = IMGBS . 'persons/';
+        $new_image_name = $_SESSION['m_image'];
+
+        if (!empty($_FILES['profile_image']['name'])) {
+            $image_tmp = $_FILES['profile_image']['tmp_name'];
+            $image_name = basename($_FILES['profile_image']['name']);
+            $image_ext = pathinfo($image_name, PATHINFO_EXTENSION);
+            $new_image_name = $_SESSION['mid'] . '.' . $image_ext;
+            
+            if (move_uploaded_file($image_tmp, $upload_dir . $new_image_name)) {
+                $_SESSION['m_image'] = $new_image_name;
+            }
+        }
+        
+        global $dbs;
+        $update_sql = sprintf(
+            "UPDATE member SET member_email='%s', member_image='%s' WHERE member_id='%s'",
+            $dbs->escape_string($new_email),
+            $dbs->escape_string($new_image_name),
+            $dbs->escape_string($_SESSION['mid'])
+        );
+
+        if ($dbs->query($update_sql)) {
+            $_SESSION['m_email'] = $new_email;
+            echo '<div class="alert alert-success">Profile updated successfully!</div>';
+        } else {
+            echo '<div class="alert alert-danger">Failed to update profile.</div>';
+        }
+    }
     function showMemberDetail()
     {
         // show the member information
@@ -855,16 +904,17 @@ if ($is_member_login) :
                         
                         case 'my_account':
                             echo '<div class="tagline">';
-                            echo '<div class="memberInfoHead">' . __('Member Detail') . '</div>' . "\n";
+                            echo '<div class="memberInfoHead">' . __('Member Detail') . '</div>';
                             echo '</div>';
                             echo showMemberDetail();
-                            // change password only form NATIVE authentication, not for others such as LDAP
-                            // if ($sysconf['auth']['member']['method'] == 'native') {
-                                echo '<div class="tagline">';
-                                echo '<div class="memberInfoHead mt-8">' . __('Change Password') . '</div>' . "\n";
-                                echo '</div>';
-                                echo changePassword();
-                            // }
+                            echo '<div class="tagline">';
+                            echo '<div class="memberInfoHead mt-8">' . __('Update Profile') . '</div>';
+                            echo '</div>';
+                            echo updateMemberInfo();
+                            echo '<div class="tagline">';
+                            echo '<div class="memberInfoHead mt-8">' . __('Change Password') . '</div>';
+                            echo '</div>';
+                            echo changePassword();
                             break;
 
                         // Add case by Erwan Setyo Budi
