@@ -800,6 +800,8 @@ if ($is_member_login) :
 
     <div class="d-flex">
         <div style="width: 16rem;" class="bg-grey-light p-4" id="member_sidebar">
+            <br>
+            <br>
             <div class="p-4">
                 <img src="<?= $member_image_url ?>" alt="member photo" class="rounded shadow">
             </div>
@@ -824,6 +826,8 @@ if ($is_member_login) :
                     <i class="far fa-user mr-2 text-green"></i><?php echo $_SESSION['m_member_type']; ?>
                 <?php endif; ?>
             </div>
+            <br>
+            <br>
             <h1 class="mb-2">Hi, <?php echo $_SESSION['m_name']; ?></h1>
             <p id="info" class="w-75 mb-4">
                 <?php echo $info; ?>
